@@ -21,9 +21,9 @@ meta:
   created: 2026-06-01
   source: docs/sprint-plan.md
   story_dir: docs/stories
-  last_updated: 2026-06-01   # C5 -> review (tests déterminisme N=200 + ×2/÷2/×4 + notebook calibration amorcé)
+  last_updated: 2026-06-01   # Sprint 2 livré : B3, B4, S0.4, S0.5, S0.6 -> done (revues bmad-code-review approuvées, 0 bloquant/majeur) ; RZ4 résolue ; A3 + F1 débloquées
   critical_path: [C, D, E]
-  next_story: null   # Sprint 1 (C1-C5) en review ; prochain sprint = 2 (B3/B4/S0.4/S0.5/S0.6)
+  next_story: A3   # Sprint 2 terminé ; prochain = sprint 3 (A3 filtrage cuisine/contraintes [débloquée], A4 traduction FR→Epicure)
 
 # -----------------------------------------------------------------------------
 # Réserves issues du readiness-check (rattachées aux stories concernées)
@@ -48,7 +48,7 @@ reserves:
     description: "Valeurs sécurité œufs + sources ANSES non figées (5/7 lignes USDA OK)."
     story: S0.5
     sprint: 2
-    status: open
+    status: resolved   # S0.5 (2026-06-01) : œufs figés (71/160 conservé, « 60 °C/2 min » retiré du champ sécurité, à sourcer), 6 lignes USDA verified=true ; sources scindées confirmées/à-confirmer ; résiduel = ouverture 1ʳᵉ main d'une page ANSES officielle (non bloquant D2, qui s'appuie sur les minima USDA critical:true). Voir meta.verification.RZ4 + docs/reviews/S0.5-code-review.md.
   RZ5:
     description: "Identité/maintenance du paquet PyPI cooklang-py à confirmer, sinon fallback regex."
     story: D3
@@ -118,20 +118,23 @@ epics:
         sprint: null
       - id: S0.4
         title: "Valider un .cook minimal dans Obsidian"
-        status: todo
+        status: done   # S0.4 revue (bmad-code-review 2026-06-01) : approuvée, 0 bloquant/majeur -> docs/reviews/S0.4-code-review.md. Périmètre automatisable validé (smoke-test .cook bien formé : tous marqueurs @/#/~/=/-- + frontmatter, 9/9 contrôles OK, UTF-8 sans BOM). RESTANT MANUEL (non bloquant) : capture Obsidian docs/cooklang/obsidian-render.png à produire par l'utilisateur (cf. docs/cooklang/obsidian-validation.md).
+        story_file: docs/stories/S0.4.md
         priority: P0
         deps: [S0.3]
         sprint: 2
       - id: S0.5
         title: "Confirmer valeurs sécurité USDA/ANSES + figer JSON"
-        status: todo
+        status: done   # S0.5 revue (bmad-code-review 2026-06-01) : approuvée, 0 bloquant/majeur -> docs/reviews/S0.5-code-review.md ; JSON valide, schéma préservé (additif), 6 minima USDA critical:true inchangés, RZ4 résolue ; pytest 46 passed (38 scaling + 8 safety)
+        story_file: docs/stories/S0.5.md
         priority: P0
         deps: [B1]
         sprint: 2
         reserves: [RZ4]
       - id: S0.6
         title: "Constituer corpus 10-15 recettes italiennes (cook.md)"
-        status: todo
+        status: done   # S0.6 revue (bmad-code-review 2026-06-01) : approuvée, 0 bloquant/majeur -> docs/reviews/S0.6-code-review.md ; 13 recettes .cook bien formées (13/13), 5 techniques couvertes, sécurité protéines conforme (osso buco 63 °C+repos, pollo 74 °C, carbonara œufs 71 °C), aucune pâtisserie ; alimente C5/F2/E3
+        story_file: docs/stories/S0.6.md
         priority: P0
         deps: [S0.3]
         sprint: 2
@@ -155,7 +158,7 @@ epics:
         sprint: null
       - id: A3
         title: "Filtrage des voisins par cuisine/contraintes"
-        status: blocked
+        status: todo   # débloquée mécaniquement : deps A1 (done) + B3 (done, sprint 2). Cible sprint 3.
         priority: P1
         deps: [A1, B3]
         sprint: 3
@@ -185,14 +188,16 @@ epics:
         sprint: null
       - id: B3
         title: "Loader knowledge + techniques_for(...)"
-        status: todo
+        status: done   # B3 revue (bmad-code-review 2026-06-01) : approuvée, 0 bloquant/majeur -> docs/reviews/B3-code-review.md ; load_safety/load_cuisines/techniques_for/safety_for, découverte modulaire (aucune cuisine en dur), exclusion cookware (pas_de_four -> searing_braising exclue), dataclasses stdlib ; pytest 47 passed (38 scaling + 9 knowledge). NB: matching cookware multi-mots à durcir en B4 (finding mineur defer).
+        story_file: docs/stories/B3.md
         priority: P1
         deps: [B2]
         sprint: 2
         files: [app/knowledge/]
       - id: B4
         title: "Mapping contraintes matérielles → #cookware interdits"
-        status: blocked
+        status: done   # B4 revue (bmad-code-review 2026-06-01) : approuvée, 0 bloquant/majeur -> docs/reviews/B4-code-review.md ; forbidden_cookware(...) public + matching multi-mots durci (corrige le finding B3, test de régression probant), excluded_techniques/Exclusion pour FR7 ; pytest 68 passed (suite complète), 0 régression
+        story_file: docs/stories/B4.md
         priority: P1
         deps: [B3]
         sprint: 2
@@ -346,7 +351,7 @@ epics:
     stories:
       - id: F1
         title: "Ajouter une 2e cuisine (sans toucher au code)"
-        status: blocked
+        status: todo   # débloquée mécaniquement : deps B3 (done) + B4 (done, sprint 2). Cible post-v1.
         priority: P2
         deps: [B3, B4]
         sprint: post-v1

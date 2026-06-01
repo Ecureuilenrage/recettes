@@ -3,13 +3,43 @@
     "authority": "USDA FSIS + ANSES",
     "scope": "Températures internes minimales sûres (transverses à toutes les cuisines)",
     "updated": "2026-06-01",
-    "disclaimer": "Valeurs issues de la recherche, A_VERIFIER de premiere main contre les sources officielles avant usage en production. Voir docs/recherche-ouverte.md point A.4.",
+    "disclaimer": "Lignes USDA FSIS / FoodSafety.gov VÉRIFIÉES et FIGÉES (volaille, pièces entières + repos, hachés, poisson, œufs/plats aux œufs, restes) : voir verified=true sur chaque ligne. Références ANSES/EFSA À CONFIRMER de première main (non ouvertes à ce jour) ; les valeurs ne dépendent pas d'elles (alignées USDA). Détail par ligne dans meta.verification. En cas de doute, arrondir vers le haut, jamais l'inverse. Voir docs/decisions-techniques.md #4 et docs/recherche-ouverte.md A#4.",
     "sources": [
       "https://www.fsis.usda.gov/food-safety/safe-food-handling-and-preparation/food-safety-basics/safe-temperature-chart",
       "https://www.foodsafety.gov/food-safety-charts/safe-minimum-internal-temperatures",
       "https://www.paquethygiene.com/co/06-05-ListeBaremesCuissAnses_1.html",
       "https://www.efsa.europa.eu/en/safe2eat/proper-food-handling"
-    ]
+    ],
+    "verification": {
+      "status": "USDA confirmé (S0.5, 2026-06-01) ; ANSES/EFSA à confirmer de première main",
+      "method": "Confrontation ligne à ligne aux sources USDA FSIS / FoodSafety.gov (decisions-techniques.md #4), reconfirmée par recherche web 2026-06.",
+      "confirmedSources": [
+        "https://www.fsis.usda.gov/food-safety/safe-food-handling-and-preparation/food-safety-basics/safe-temperature-chart",
+        "https://www.foodsafety.gov/food-safety-charts/safe-minimum-internal-temperatures"
+      ],
+      "toConfirmSources": [
+        "https://www.paquethygiene.com/co/06-05-ListeBaremesCuissAnses_1.html",
+        "https://www.efsa.europa.eu/en/safe2eat/proper-food-handling"
+      ],
+      "lines": [
+        { "foodType": "Volaille (entiere, parts, hachee)", "verified": true, "authority": "USDA FSIS / FoodSafety.gov", "date": "2026-06-01" },
+        { "foodType": "Boeuf / veau / agneau / porc - pieces entieres", "verified": true, "authority": "USDA FSIS (revision 2011) / FoodSafety.gov", "date": "2026-06-01" },
+        { "foodType": "Boeuf / veau / agneau - hache", "verified": true, "authority": "USDA FSIS / FoodSafety.gov", "date": "2026-06-01" },
+        { "foodType": "Porc - hache", "verified": true, "authority": "USDA FSIS / FoodSafety.gov", "date": "2026-06-01" },
+        { "foodType": "Poisson / fruits de mer", "verified": true, "authority": "USDA FSIS / FoodSafety.gov", "date": "2026-06-01", "note": "Indicateur 'opaque / s'effeuille' reclasse TECHNIQUE (repere de cuisson), pas un minimum de securite." },
+        { "foodType": "Oeufs (plats aux oeufs)", "verified": true, "authority": "USDA FSIS / FoodSafety.gov", "date": "2026-06-01", "note": "Plats aux oeufs 160 F / 71 C confirme. 'Oeufs nature' = blanc ET jaune fermes (repere)." },
+        { "foodType": "Restes / plats precuits - rechauffage", "verified": true, "authority": "USDA FSIS (74 C) / ANSES (75 C, plus conservateur)", "date": "2026-06-01" }
+      ],
+      "eggs_60c_2min": {
+        "verified": false,
+        "decision": "RETIRE DU CHAMP SECURITE (S0.5). Le '60 C maintenu 2 min (pasteurisation)' n'a pas ete retrouve/source de premiere main sur la page USDA grand public ; conserve uniquement en note etiquetee 'hors minimum de securite, a sourcer'. Ne sert JAMAIS de minimum de securite tant qu'il n'est pas source."
+      },
+      "anses_efsa_sources": {
+        "verified": false,
+        "decision": "A CONFIRMER de premiere main (pages ANSES/EFSA non ouvertes). Conservees pour reference mais marquees a confirmer ; les valeurs ne dependent pas d'elles (toutes alignees USDA). RESIDUEL RZ4."
+      },
+      "RZ4": "Resolue : ligne oeufs clarifiee (plats aux oeufs 71/160 figes ; '60 C/2 min' retire du champ securite -> note a sourcer) et sources qualifiees (USDA confirmees / ANSES-EFSA a confirmer). Residuel explicite : ouverture/citation de premiere main d'une page ANSES officielle (non bloquant pour D2, qui s'appuie sur les valeurs USDA figees critical=true)."
+    }
   },
   "standards": [
     {
@@ -18,8 +48,9 @@
       "minInternalF": 165,
       "restMinutes": 0,
       "critical": true,
-      "source": "USDA FSIS / ANSES",
-      "note": "Aucune reduction. Salmonella, Campylobacter."
+      "verified": true,
+      "source": "USDA FSIS / FoodSafety.gov",
+      "note": "Aucune reduction. Salmonella, Campylobacter. Verifie et fige (S0.5, USDA 165 F)."
     },
     {
       "foodType": "Boeuf / veau / agneau / porc - pieces entieres (steaks, rotis, cotes)",
@@ -27,8 +58,9 @@
       "minInternalF": 145,
       "restMinutes": 3,
       "critical": true,
-      "source": "USDA FSIS (revision 2011) / ANSES",
-      "note": "Repos 3 min critique (carryover 5-10 C). Retirer ~5 C avant la cible."
+      "verified": true,
+      "source": "USDA FSIS (revision 2011) / FoodSafety.gov",
+      "note": "Repos 3 min critique (carryover 5-10 C). Retirer ~5 C avant la cible. Verifie et fige (S0.5, USDA 145 F + repos 3 min)."
     },
     {
       "foodType": "Boeuf / veau / agneau - hache",
@@ -36,8 +68,9 @@
       "minInternalF": 160,
       "restMinutes": 0,
       "critical": true,
-      "source": "USDA FSIS / ANSES",
-      "note": "Plus strict que les pieces entieres."
+      "verified": true,
+      "source": "USDA FSIS / FoodSafety.gov",
+      "note": "Plus strict que les pieces entieres. Verifie et fige (S0.5, USDA 160 F viandes hachees)."
     },
     {
       "foodType": "Porc - hache",
@@ -45,8 +78,9 @@
       "minInternalF": 160,
       "restMinutes": 0,
       "critical": true,
-      "source": "USDA FSIS / ANSES",
-      "note": "Plus strict que les pieces entieres."
+      "verified": true,
+      "source": "USDA FSIS / FoodSafety.gov",
+      "note": "Plus strict que les pieces entieres. Verifie et fige (S0.5, USDA 160 F viandes hachees)."
     },
     {
       "foodType": "Poisson / fruits de mer",
@@ -54,8 +88,9 @@
       "minInternalF": 145,
       "restMinutes": 0,
       "critical": true,
-      "source": "USDA FSIS / ANSES",
-      "note": "Ou opaque + s'effeuille a la fourchette."
+      "verified": true,
+      "source": "USDA FSIS / FoodSafety.gov",
+      "note": "Minimum de securite 63 C / 145 F (poisson a nageoires). [TECHNIQUE] Repere de cuisson (PAS un minimum de securite) : chair opaque qui s'effeuille a la fourchette. Verifie et fige (S0.5, USDA 145 F)."
     },
     {
       "foodType": "Oeufs (brouilles, frits, poches) et preparations a base d'oeuf",
@@ -63,8 +98,9 @@
       "minInternalF": 160,
       "restMinutes": 0,
       "critical": true,
-      "source": "USDA FSIS / ANSES",
-      "note": "Blancs ET jaunes fermes. Ou 60 C maintenu 2 min (pasteurisation)."
+      "verified": true,
+      "source": "USDA FSIS / FoodSafety.gov",
+      "note": "Minimum de securite 71 C / 160 F pour les PLATS aux oeufs (casseroles, quiches, flans, preparations cuites) -- confirme USDA. Oeufs nature : cuire jusqu'a blanc ET jaune fermes (repere, pas un seuil distinct). [HORS SECURITE] La mention '60 C maintenu 2 min (pasteurisation)' est retiree du champ securite : non sourcee de premiere main, A SOURCER ; ne sert jamais de minimum de securite (cf. meta.verification.eggs_60c_2min)."
     },
     {
       "foodType": "Restes / plats precuits - rechauffage",
@@ -72,14 +108,17 @@
       "minInternalF": 165,
       "restMinutes": 0,
       "critical": true,
+      "verified": true,
       "source": "USDA FSIS (74 C) / ANSES (75 C, plus conservateur)",
-      "note": "A coeur, sans point froid. Remuer pour homogeneiser."
+      "note": "A coeur, sans point froid. Remuer pour homogeneiser. Verifie et fige (S0.5, USDA 165 F restes/casseroles)."
     }
   ],
   "rules": [
     "Le generateur DOIT citer la ligne applicable pour toute proteine.",
     "Ne JAMAIS proposer une temperature inferieure au minimum.",
     "critical=true => aucune flexibilite, meme par preference.",
-    "Toujours mentionner le temps de repos quand restMinutes > 0."
+    "Toujours mentionner le temps de repos quand restMinutes > 0.",
+    "Les reperes etiquetes [TECHNIQUE] (ex. poisson opaque/s'effeuille) ne remplacent JAMAIS le minimum de securite.",
+    "Toute valeur etiquetee [HORS SECURITE] / 'a sourcer' (ex. 60 C/2 min oeufs) ne doit pas etre utilisee comme minimum de securite tant qu'elle n'est pas sourcee."
   ]
 }
