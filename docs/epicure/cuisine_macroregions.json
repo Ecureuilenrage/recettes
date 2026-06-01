@@ -1,0 +1,75 @@
+{
+  "East_Asian": {
+    "recipes": 1549034,
+    "traditions": [
+      "Chinese",
+      "Korean"
+    ]
+  },
+  "Western_Atlantic": {
+    "recipes": 198086,
+    "traditions": [
+      "American",
+      "British",
+      "German",
+      "Scandinavian"
+    ]
+  },
+  "Mediterranean": {
+    "recipes": 164107,
+    "traditions": [
+      "Italian",
+      "French",
+      "Iberian",
+      "Greek",
+      "Levantine",
+      "North African",
+      "Turkish"
+    ]
+  },
+  "Eastern_European": {
+    "recipes": 154479,
+    "traditions": [
+      "Russian",
+      "Ukrainian",
+      "Polish",
+      "Hungarian",
+      "Georgian"
+    ]
+  },
+  "Southeast_Asian": {
+    "recipes": 107964,
+    "traditions": [
+      "Thai",
+      "Vietnamese",
+      "Filipino",
+      "Indonesian",
+      "Malay"
+    ]
+  },
+  "South_Asian": {
+    "recipes": 47462,
+    "traditions": [
+      "Indian",
+      "Pakistani",
+      "Sri Lankan",
+      "Bangladeshi"
+    ]
+  },
+  "Latin_American": {
+    "recipes": 40618,
+    "traditions": [
+      "Mexican",
+      "Caribbean",
+      "Brazilian",
+      "Peruvian",
+      "Colombian"
+    ]
+  },
+  "Japanese": {
+    "recipes": 33923,
+    "traditions": [
+      "Japanese"
+    ]
+  }
+}

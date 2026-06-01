@@ -1,0 +1,129 @@
+{
+  "meta": {
+    "id": "italian_savory_v1",
+    "name": "Cuisine italienne (sale)",
+    "scope": "Sale uniquement - patisserie hors perimetre",
+    "version": "1.0",
+    "updated": "2026-06-01",
+    "disclaimer": "Parametres TECHNIQUE indicatifs (sources culinaires), A_AFFINER. Les valeurs de securite sont dans safety-temperatures.json.",
+    "sources": [
+      "https://www.eataly.com/us_en/magazine/how-to/how-to-cook/how-to-cook-pasta",
+      "https://www.seriouseats.com",
+      "https://www.americastestkitchen.com"
+    ]
+  },
+  "techniques": [
+    {
+      "id": "pasta_al_dente",
+      "name": "Pates al dente",
+      "category": "Ebullition",
+      "safetyClassification": "Faible risque (eau bouillante)",
+      "parameters": {
+        "tempC": 100,
+        "tempF": 212,
+        "heat": "feu vif (pleine ebullition)",
+        "ratios": { "eau_L_par_500g": "4-6", "sel_g_par_L": 30 },
+        "timeMinutes": "indication paquet -1, puis gouter"
+      },
+      "criticalPoints": [
+        { "point": "Ne jamais rincer les pates", "reason": "l'amidon assure l'adherence de la sauce", "level": "TECHNIQUE" },
+        { "point": "Reserver ~1/4 de tasse d'eau de cuisson", "reason": "lier/detendre la sauce", "level": "TECHNIQUE" }
+      ],
+      "donenessIndicators": ["tendre dehors, legere resistance au coeur", "pas de coeur blanc craie a la cassure"],
+      "requiredTools": ["grande casserole (>=4L)", "passoire"],
+      "sources": ["https://www.eataly.com/us_en/magazine/how-to/how-to-cook/how-to-cook-pasta"]
+    },
+    {
+      "id": "risotto",
+      "name": "Risotto (Arborio / Carnaroli)",
+      "category": "Mijotage avec liberation d'amidon",
+      "safetyClassification": "Faible risque (si bouillon sur)",
+      "parameters": {
+        "panTempC": "150-160",
+        "heat": "feu moyen-doux constant",
+        "ratios": { "riz_g": 200, "bouillon_chaud_ratio": "3:1 a 5:1 liquide:riz" },
+        "timeMinutes": "18-20"
+      },
+      "criticalPoints": [
+        { "point": "Bouillon ajoute CHAUD, progressivement", "reason": "le froid interrompt la cuisson", "level": "TECHNIQUE" },
+        { "point": "Remuer regulierement (doux)", "reason": "libere l'amidon = cremeux", "level": "TECHNIQUE" },
+        { "point": "Mantecatura finale (beurre froid + parmesan, hors feu)", "reason": "emulsion cremeuse", "level": "PREFERENCE" }
+      ],
+      "donenessIndicators": ["grain cremeux dehors, legere fermete au coeur", "coule comme une 'lave' a l'assiette"],
+      "requiredTools": ["casserole a fond epais", "cuillere en bois", "louche", "casserole separee pour le bouillon"],
+      "sources": ["https://www.seriouseats.com"]
+    },
+    {
+      "id": "soffritto",
+      "name": "Soffritto (base aromatique)",
+      "category": "Suer a feu doux",
+      "safetyClassification": "Tres faible risque",
+      "parameters": {
+        "panTempC": "120-150",
+        "heat": "feu doux a moyen-doux",
+        "ratios": { "oignon_carotte_celeri": "1:1:1 en poids", "huile_olive_ml_par_150g": 30 },
+        "timeMinutes": "15-30"
+      },
+      "criticalPoints": [
+        { "point": "Ne jamais monter le feu", "reason": "brunir trop vite = amertume; on vise la douceur", "level": "TECHNIQUE" },
+        { "point": "Les legumes ramollissent sans brunir (oignon dore pale)", "reason": "caramelisation douce des sucres", "level": "TECHNIQUE" }
+      ],
+      "donenessIndicators": ["oignon translucide a dore pale", "legumes ecrasables a la cuillere", "arome sucre"],
+      "requiredTools": ["poele/saute a fond epais", "cuillere en bois"],
+      "sources": ["https://mortadellahead.com/italian-soffritto-recipe/"]
+    },
+    {
+      "id": "sugo_pomodoro",
+      "name": "Sugo di pomodoro (sauce tomate mijotee)",
+      "category": "Mijotage",
+      "safetyClassification": "Risque moyen (mijotage long requis)",
+      "parameters": {
+        "tempC": "82-90",
+        "heat": "feu tres doux (1-2 bulles/seconde)",
+        "ratios": { "tomates_kg": 1, "ail_gousses": "2-4", "huile_olive_ml": "30-60" },
+        "timeMinutes": "30 minimum, 60-180 ideal"
+      },
+      "criticalPoints": [
+        { "point": "Mijoter doucement, couvercle entrebaille", "reason": "reduction controlee, developpe la douceur", "level": "TECHNIQUE" },
+        { "point": "Remuer toutes les 10-15 min", "reason": "evite que ca accroche", "level": "TECHNIQUE" },
+        { "point": "Acidite + cuisson = securite", "reason": "pH bas + duree", "level": "SECURITE" }
+      ],
+      "donenessIndicators": ["rouge profond", "nappe la cuillere", "acidite adoucie"],
+      "requiredTools": ["casserole a fond epais", "cuillere en bois"],
+      "sources": ["https://asimplepalate.com/blog/san-marzano-tomato-sauce/"]
+    },
+    {
+      "id": "searing_braising",
+      "name": "Saisie + braise (Osso Buco / Brasato)",
+      "category": "Combinaison : saisie vive + braise lente au four",
+      "safetyClassification": "RISQUE ELEVE - verifier temperature a coeur",
+      "parameters": {
+        "searTempC": "232-260",
+        "ovenTempC": 163,
+        "ovenTempF": 325,
+        "heat": "saisie : feu tres vif; braise : four 163 C couvert",
+        "ratios": { "liquide": "vin + bouillon ~50/50, a mi-hauteur de la viande" },
+        "timeMinutes": "saisie 1-2 min/face; braise 135-150 (jarret de veau)"
+      },
+      "criticalPoints": [
+        { "point": "Verifier la temperature interne (thermometre, eviter l'os)", "reason": "securite proteine", "level": "SECURITE", "ref": "safety-temperatures: boeuf/veau pieces entieres 63 C + 3 min" },
+        { "point": "Repos 10-20 min apres le four", "reason": "carryover + redistribution des jus", "level": "TECHNIQUE" }
+      ],
+      "donenessIndicators": ["fourchette sans resistance (fork-tender)", "sauce reduite et nappante"],
+      "requiredTools": ["poele en fonte (saisie)", "cocotte avec couvercle (braise)", "thermometre a lecture instantanee", "four"],
+      "sources": ["https://overthefirecooking.com/braised-osso-buco/"]
+    }
+  ],
+  "cookwareConstraints": {
+    "pas_de_four": ["four", "moule a four", "cocotte au four"],
+    "pas_de_blender": ["blender", "mixeur plongeant"],
+    "pas_de_robot": ["robot culinaire"]
+  },
+  "llmConstraints": [
+    "NE JAMAIS inventer une temperature ou un temps : choisir dans parameters ou safety-temperatures.json.",
+    "Etiqueter chaque consigne : [SECURITE] / [TECHNIQUE] / [PREFERENCE].",
+    "Pour toute proteine, citer la temperature de securite et le temps de repos.",
+    "Ne pas utiliser un ustensile present dans les #cookware interdits par les contraintes utilisateur.",
+    "Si une technique requise utilise un ustensile interdit (ex. four), la remplacer ou refuser proprement."
+  ]
+}

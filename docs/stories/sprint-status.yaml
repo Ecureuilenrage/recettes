@@ -1,0 +1,364 @@
+# =============================================================================
+# sprint-status.yaml — Source de vérité du suivi de sprint (méthode BMAD)
+# -----------------------------------------------------------------------------
+# Généré depuis docs/sprint-plan.md (planning du 2026-06-01).
+# Référez-vous à ce fichier pour `create-story` : il porte le statut, les
+# dépendances, le sprint cible, les fichiers cibles et les réserves (RZ) de
+# chaque story. Mettez à jour le champ `status` au fil de l'avancement.
+#
+# Conventions :
+#   status     : done | todo | blocked | in_progress
+#   priority   : P0 (socle/cœur) | P1 (v1 fonctionnelle) | P2 (polish/extension)
+#   blocked    => se débloque mécaniquement quand toutes ses `deps` sont `done`.
+# Docs liés : PRD.md (v0.2) · architecture.md · backlog.md · readiness-check.md
+#             validation-prd.md · decisions-techniques.md · sprint-plan.md
+# =============================================================================
+
+meta:
+  project: "Scaler de recettes Epicure"
+  type: sprint-status
+  version: "1.0"
+  created: 2026-06-01
+  source: docs/sprint-plan.md
+  story_dir: docs/stories
+  last_updated: 2026-06-01   # C5 -> review (tests déterminisme N=200 + ×2/÷2/×4 + notebook calibration amorcé)
+  critical_path: [C, D, E]
+  next_story: null   # Sprint 1 (C1-C5) en review ; prochain sprint = 2 (B3/B4/S0.4/S0.5/S0.6)
+
+# -----------------------------------------------------------------------------
+# Réserves issues du readiness-check (rattachées aux stories concernées)
+# -----------------------------------------------------------------------------
+reserves:
+  RZ1:
+    description: "Règle œufs scale_eggs(3,2.0)→5 contredit round(3×2.0)=6 — figer l'algo déterministe."
+    story: C2
+    sprint: 1
+    status: resolved   # algo 'borne basse œufs liants' figé et commenté # RZ1 dans engine.py (C2, 2026-06-01)
+  RZ2:
+    description: "Seuil de k (note contenant / flag non-linéarité) non chiffré — constante K_NONLINEAR_THRESHOLD=1.5."
+    story: [C3, C4]
+    sprint: 1
+    status: open
+  RZ3:
+    description: "Story manquante : traduction FR → clé Epicure (snake_case EN). Préreq E1/E2."
+    story: A4
+    sprint: 3
+    status: open
+  RZ4:
+    description: "Valeurs sécurité œufs + sources ANSES non figées (5/7 lignes USDA OK)."
+    story: S0.5
+    sprint: 2
+    status: open
+  RZ5:
+    description: "Identité/maintenance du paquet PyPI cooklang-py à confirmer, sinon fallback regex."
+    story: D3
+    sprint: 4
+    status: open
+  RZ6:
+    description: "Resync backlog FR5a/b/c & FR6a/b + trancher FR8 (sélecteur UI vs note R&D). Documentaire."
+    story: [C1, C2, C3, C4, D3, D4, A2]
+    sprint: 1
+    status: open
+
+# -----------------------------------------------------------------------------
+# Sprints
+# -----------------------------------------------------------------------------
+sprints:
+  - id: 1
+    theme: "Le cœur : moteur de scaling déterministe et testé"
+    stories: [C1, C2, C3, C4, C5]
+    goal: "Livrer app/scaling/ pur et déterministe ; pytest vert (stubs skip retirés)."
+  - id: 2
+    theme: "Couche 2 (savoir technique) + finalisation Phase 0"
+    stories: [B3, B4, S0.4, S0.5, S0.6]
+    goal: "Débloque D1/D2/D3 ; alimente E3/C5."
+  - id: 3
+    theme: "Couche 1 complète (associations exploitables)"
+    stories: [A3, A4]
+    goal: "Débloque E1 (héros FR) et le filtrage par cuisine/contraintes."
+  - id: 4
+    theme: "Générateur LLM sous contraintes"
+    stories: [D1, D2, D3, D4]
+    goal: "Produit la recette .cook + garde-fou anti-hallucination."
+  - id: 5
+    theme: "App web + validation + portfolio"
+    stories: [E1, E2, E3, E4]
+    goal: "Livrable v1 utilisable en local."
+  - id: post-v1
+    theme: "Extension & polish"
+    stories: [F1, F2, F3]
+    goal: "Modularité (2e cuisine), calibration coeffs, doc différée pâtisserie."
+
+# -----------------------------------------------------------------------------
+# Épics & stories
+# -----------------------------------------------------------------------------
+epics:
+
+  - id: phase-0
+    name: "Phase 0 — Socle & vérifications"
+    priority: P0
+    stories:
+      - id: S0.1
+        title: "Télécharger embeddings Epicure + inspecter le format"
+        status: done
+        priority: P0
+        deps: []
+        sprint: null
+      - id: S0.2
+        title: "Charger en Python + cosine top-k"
+        status: done
+        priority: P0
+        deps: [S0.1]
+        sprint: null
+      - id: S0.3
+        title: "Trancher le parseur Cooklang (templating maison)"
+        status: done   # acté dans decisions-techniques.md
+        priority: P0
+        deps: []
+        sprint: null
+      - id: S0.4
+        title: "Valider un .cook minimal dans Obsidian"
+        status: todo
+        priority: P0
+        deps: [S0.3]
+        sprint: 2
+      - id: S0.5
+        title: "Confirmer valeurs sécurité USDA/ANSES + figer JSON"
+        status: todo
+        priority: P0
+        deps: [B1]
+        sprint: 2
+        reserves: [RZ4]
+      - id: S0.6
+        title: "Constituer corpus 10-15 recettes italiennes (cook.md)"
+        status: todo
+        priority: P0
+        deps: [S0.3]
+        sprint: 2
+
+  - id: A
+    name: "Couche Epicure (associations)"
+    priority: P0/P1
+    stories:
+      - id: A1
+        title: "Loader embeddings + cosine top-k"
+        status: done
+        priority: P0
+        deps: [S0.1, S0.2]
+        sprint: null
+        files: [app/epicure/loader.py]
+      - id: A2
+        title: "Benchmark cooc vs core + note de décision"
+        status: done   # tranché : cooc par défaut (decisions-techniques.md)
+        priority: P1
+        deps: [A1]
+        sprint: null
+      - id: A3
+        title: "Filtrage des voisins par cuisine/contraintes"
+        status: blocked
+        priority: P1
+        deps: [A1, B3]
+        sprint: 3
+      - id: A4
+        title: "Traduction FR → clé Epicure (snake_case EN)"
+        status: todo   # nouvelle story issue de RZ3
+        priority: P1
+        deps: [A1]
+        sprint: 3
+        reserves: [RZ3]
+
+  - id: B
+    name: "Base technique (couche 2)"
+    priority: P0/P1
+    stories:
+      - id: B1
+        title: "safety-temperatures.json (rédigé)"
+        status: done
+        priority: P0
+        deps: []
+        sprint: null
+      - id: B2
+        title: "schema.md + cuisine-italienne.json"
+        status: done
+        priority: P0
+        deps: []
+        sprint: null
+      - id: B3
+        title: "Loader knowledge + techniques_for(...)"
+        status: todo
+        priority: P1
+        deps: [B2]
+        sprint: 2
+        files: [app/knowledge/]
+      - id: B4
+        title: "Mapping contraintes matérielles → #cookware interdits"
+        status: blocked
+        priority: P1
+        deps: [B3]
+        sprint: 2
+
+  - id: C
+    name: "Moteur de scaling (couche 3, CŒUR)"
+    priority: P0
+    stories:
+      - id: C1
+        title: "Types linear/sublinear/fixed + lecture de la table"
+        status: done   # C1 revue (bmad-code-review 2026-06-01) : approuvée, 0 blocker/major -> docs/reviews/C1-code-review.md ; pytest 4 passed / 2 skipped
+        story_file: docs/stories/C1.md
+        priority: P0
+        deps: []
+        sprint: 1
+        files: [app/scaling/table.py, app/scaling/engine.py, tests/test_scaling.py]
+        api: ["classify(name) -> ScalingRule", "scale(name, qty, unit, k) -> ScaledQuantity"]
+        ac:
+          - "classify lit table-scaling-sale.json (chargée une seule fois, lecture seule) ; défaut linear."
+          - "Matching par token entier, insensible casse/accents (pas de sous-chaîne)."
+          - "scale('sel',1,'c.à.c',2.0) < 2 (sublinear, coeff 0.75 → ~1.68)."
+          - "scale('tomate',200,'g',2.0) = 400 g (linear par défaut)."
+          - "Température → type fixed, valeur inchangée, destinée au verrou '='."
+          - "Sortie ScaledQuantity: name,value,unit,type,fixed,notes,debug."
+        dod: "classify+scale (linear/sublinear/fixed) ; tests sel & température verts ; déterminisme ; aucun coeff codé en dur."
+      - id: C2
+        title: "Scaling discret des œufs"
+        status: done   # implémentée + revue approuvée (0 blocker/major) -> pytest 7 passed / 1 skipped (2026-06-01)
+        story_file: docs/stories/C2.md
+        priority: P0
+        deps: [C1]
+        sprint: 1
+        files: [app/scaling/engine.py, tests/test_scaling.py]
+        api: ["scale_eggs(count, k) -> ScaledEggs"]
+        reserves: [RZ1]
+        ac:
+          - "scale_eggs(3,2.0) → 5 œufs entiers (pas 6) + note + reste en volume/poids (~50 g/œuf)."
+          - "RZ1 : algo déterministe documenté (cible théorique + borne basse 'œufs liants')."
+          - "Cas sans correction couvert : scale_eggs(2,1.5) → 3."
+          - "Sortie ScaledEggs: whole_eggs,remainder,note."
+        dod: "Règle œufs explicite (formule + condition) commentée RZ1 ; test asserte 5 ; déterministe."
+      - id: C3
+        title: "Scaling géométrique du temps k^(2/3)"
+        status: done   # implémentée + revue approuvée (0 blocker/major) -> docs/reviews/C3-code-review.md ; pytest 11 passed / 0 skipped (2026-06-01)
+        story_file: docs/stories/C3.md
+        priority: P0
+        deps: [C1]
+        sprint: 1
+        files: [app/scaling/engine.py, tests/test_scaling.py]
+        api: ["scale_time(minutes, k) -> ScaledTime"]
+        reserves: [RZ2]
+        ac:
+          - "scale_time(20,2.0) → ~32 min (20×2^0.6667), exponent lu dans la table."
+          - "RZ2 : constante K_NONLINEAR_THRESHOLD=1.5 (commentée 'à calibrer F2'), partagée avec C4."
+          - "Note '--' changement de contenant émise quand k ≥ seuil."
+          - "Sortie ScaledTime: minutes,nonlinear,note."
+        dod: "scale_time implémenté ; test ~32 pour (20,2.0) ±0.5 ; seuil défini une fois, commenté RZ2."
+      - id: C4
+        title: "Flags de non-linéarité + réserve 10 %"
+        status: done   # implémentée + revue approuvée (0 blocker/major) -> docs/reviews/C4-code-review.md ; pytest 18 passed / 0 skipped
+        priority: P0
+        deps: [C1, C3]
+        sprint: 1
+        files: [app/scaling/engine.py, tests/test_scaling.py]
+        reserves: [RZ2]
+        ac:
+          - "Catégorie nonlinearFlag:true reçoit la note '-- ne se double pas proprement au-delà de ~1.5–2×' dès k ≥ seuil."
+          - "Sel (reserve_pct:10) scindé 90% incorporation / 10% ajustement final + note."
+          - "Notes/flags remontent dans ScaledQuantity.notes et .debug."
+        dod: "Flag émis selon seuil partagé ; réserve 10% appliquée au sel ; tests verts."
+      - id: C5
+        title: "Tests unitaires déterministes + notebook de calibration"
+        status: done   # implémentée + revue approuvée (0 blocker/major) -> docs/reviews/C5-code-review.md ; pytest 38 passed / 0 skipped (2026-06-01)
+        story_file: docs/stories/C5.md
+        priority: P0
+        deps: [C1, C2, C3, C4, S0.6]   # notebook complet dépend de S0.6 ; squelette livrable en sprint 1
+        sprint: 1
+        files: [tests/test_scaling.py, notebooks/calibration_scaling.ipynb]
+        ac:
+          - "pytest tests/test_scaling.py vert sans skip (4 stubs implémentés + cas C2/C3/C4)."
+          - "Test de déterminisme : même entrée → ScaledQuantity identique sur N exécutions."
+          - "Scénarios ×2, ÷2, ×4 sur ingrédients représentatifs."
+          - "Notebook amorcé (comparaison moteur vs ×N naïf ; complet après S0.6)."
+        dod: "pytest vert ; test déterminisme ; ×2/÷2/×4 couverts ; notebook amorcé."
+
+  - id: D
+    name: "Générateur LLM (couche 4)"
+    priority: P1
+    stories:
+      - id: D1
+        title: "Prompt contraint + intégration Claude API"
+        status: blocked
+        priority: P1
+        deps: [A3, B3, B4, C5]
+        sprint: 4
+        files: [app/generator/]
+      - id: D2
+        title: "Garde-fou « jamais hors base » + tests anti-hallucination"
+        status: blocked
+        priority: P1
+        deps: [D1, S0.5]
+        sprint: 4
+        reserves: [RZ4]
+      - id: D3
+        title: "Émission .cook + validation"
+        status: blocked
+        priority: P1
+        deps: [D1, C5, S0.4]
+        sprint: 4
+        reserves: [RZ5]
+      - id: D4
+        title: "Rendu Markdown lisible"
+        status: blocked
+        priority: P1
+        deps: [D3]
+        sprint: 4
+
+  - id: E
+    name: "App web + R&D"
+    priority: P1/P2
+    stories:
+      - id: E1
+        title: "FastAPI + endpoint /generate"
+        status: blocked
+        priority: P1
+        deps: [D4, A4]
+        sprint: 5
+        files: [app/main.py]
+      - id: E2
+        title: "UI minimale (formulaire + rendu + panneau debug)"
+        status: blocked
+        priority: P1
+        deps: [E1]
+        sprint: 5
+      - id: E3
+        title: "Jeu de validation scaling (corpus)"
+        status: blocked
+        priority: P2
+        deps: [C5, S0.6]
+        sprint: 5
+      - id: E4
+        title: "README portfolio + attribution Epicure (CC BY 4.0)"
+        status: todo
+        priority: P2
+        deps: []
+        sprint: 5
+
+  - id: F
+    name: "Extension & polish (hors v1)"
+    priority: P2
+    stories:
+      - id: F1
+        title: "Ajouter une 2e cuisine (sans toucher au code)"
+        status: blocked
+        priority: P2
+        deps: [B3, B4]
+        sprint: post-v1
+      - id: F2
+        title: "Affiner coefficients de scaling via tests réels"
+        status: blocked
+        priority: P2
+        deps: [C5]
+        sprint: post-v1
+      - id: F3
+        title: "Documenter le différé pâtisserie (chimie)"
+        status: todo
+        priority: P2
+        deps: []
+        sprint: post-v1

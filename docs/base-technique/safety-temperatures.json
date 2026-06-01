@@ -1,0 +1,85 @@
+{
+  "meta": {
+    "authority": "USDA FSIS + ANSES",
+    "scope": "Températures internes minimales sûres (transverses à toutes les cuisines)",
+    "updated": "2026-06-01",
+    "disclaimer": "Valeurs issues de la recherche, A_VERIFIER de premiere main contre les sources officielles avant usage en production. Voir docs/recherche-ouverte.md point A.4.",
+    "sources": [
+      "https://www.fsis.usda.gov/food-safety/safe-food-handling-and-preparation/food-safety-basics/safe-temperature-chart",
+      "https://www.foodsafety.gov/food-safety-charts/safe-minimum-internal-temperatures",
+      "https://www.paquethygiene.com/co/06-05-ListeBaremesCuissAnses_1.html",
+      "https://www.efsa.europa.eu/en/safe2eat/proper-food-handling"
+    ]
+  },
+  "standards": [
+    {
+      "foodType": "Volaille (entiere, parts, hachee)",
+      "minInternalC": 74,
+      "minInternalF": 165,
+      "restMinutes": 0,
+      "critical": true,
+      "source": "USDA FSIS / ANSES",
+      "note": "Aucune reduction. Salmonella, Campylobacter."
+    },
+    {
+      "foodType": "Boeuf / veau / agneau / porc - pieces entieres (steaks, rotis, cotes)",
+      "minInternalC": 63,
+      "minInternalF": 145,
+      "restMinutes": 3,
+      "critical": true,
+      "source": "USDA FSIS (revision 2011) / ANSES",
+      "note": "Repos 3 min critique (carryover 5-10 C). Retirer ~5 C avant la cible."
+    },
+    {
+      "foodType": "Boeuf / veau / agneau - hache",
+      "minInternalC": 71,
+      "minInternalF": 160,
+      "restMinutes": 0,
+      "critical": true,
+      "source": "USDA FSIS / ANSES",
+      "note": "Plus strict que les pieces entieres."
+    },
+    {
+      "foodType": "Porc - hache",
+      "minInternalC": 71,
+      "minInternalF": 160,
+      "restMinutes": 0,
+      "critical": true,
+      "source": "USDA FSIS / ANSES",
+      "note": "Plus strict que les pieces entieres."
+    },
+    {
+      "foodType": "Poisson / fruits de mer",
+      "minInternalC": 63,
+      "minInternalF": 145,
+      "restMinutes": 0,
+      "critical": true,
+      "source": "USDA FSIS / ANSES",
+      "note": "Ou opaque + s'effeuille a la fourchette."
+    },
+    {
+      "foodType": "Oeufs (brouilles, frits, poches) et preparations a base d'oeuf",
+      "minInternalC": 71,
+      "minInternalF": 160,
+      "restMinutes": 0,
+      "critical": true,
+      "source": "USDA FSIS / ANSES",
+      "note": "Blancs ET jaunes fermes. Ou 60 C maintenu 2 min (pasteurisation)."
+    },
+    {
+      "foodType": "Restes / plats precuits - rechauffage",
+      "minInternalC": 74,
+      "minInternalF": 165,
+      "restMinutes": 0,
+      "critical": true,
+      "source": "USDA FSIS (74 C) / ANSES (75 C, plus conservateur)",
+      "note": "A coeur, sans point froid. Remuer pour homogeneiser."
+    }
+  ],
+  "rules": [
+    "Le generateur DOIT citer la ligne applicable pour toute proteine.",
+    "Ne JAMAIS proposer une temperature inferieure au minimum.",
+    "critical=true => aucune flexibilite, meme par preference.",
+    "Toujours mentionner le temps de repos quand restMinutes > 0."
+  ]
+}

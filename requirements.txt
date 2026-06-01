@@ -1,0 +1,17 @@
+# Backend & web
+fastapi
+uvicorn[standard]
+jinja2
+python-multipart
+
+# Epicure (embeddings locaux)
+numpy
+huggingface_hub
+safetensors        # [A VERIFIER] selon le format reel publie (sinon: pandas pour CSV)
+
+# LLM
+anthropic
+
+# Dev / R&D
+pytest
+jupyter

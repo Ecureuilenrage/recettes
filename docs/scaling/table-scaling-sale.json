@@ -1,0 +1,45 @@
+{
+  "meta": {
+    "name": "Table de scaling - cuisine salee v1",
+    "version": "0.1",
+    "updated": "2026-06-01",
+    "disclaimer": "Coefficients de DEPART issus de la recherche + physique. A CALIBRER par tests reels (x2 / /2). Voir docs/recherche-ouverte.md point C. Ne pas presenter comme exacts.",
+    "scalingTypes": {
+      "linear": "qty * k",
+      "sublinear": "qty * k^coeff (0<coeff<1) ; perception non lineaire",
+      "discrete": "unites entieres + reste en volume/poids, arrondi vers le bas",
+      "geometric": "temps : t * k^(2/3) ; diffusion surface/volume",
+      "fixed": "inchange -> '=' Cooklang"
+    }
+  },
+  "defaults": {
+    "main_ingredients": { "type": "linear", "note": "proteines, legumes, liquides, feculents : OK la plupart du temps" }
+  },
+  "categories": [
+    { "match": ["sel", "salt", "sauce soja", "soy sauce"], "type": "sublinear", "coeff": 0.75, "reason": "perception gustative non lineaire ; x2 parait trop sale", "reserve_pct": 10 },
+    { "match": ["poivre", "black pepper"], "type": "sublinear", "coeff": 0.70, "reason": "monte vite en intensite" },
+    { "match": ["piment", "cayenne", "chili", "pepperoncino"], "type": "sublinear", "coeff": 0.60, "reason": "composes volatils s'accumulent", "nonlinearFlag": true },
+    { "match": ["ail", "garlic"], "type": "sublinear", "coeff": 0.85, "reason": "arome fort" },
+    { "match": ["gingembre", "ginger"], "type": "sublinear", "coeff": 0.80, "reason": "arome fort" },
+    { "match": ["herbes", "basilic", "origan", "romarin", "thym", "basil", "oregano"], "type": "sublinear", "coeff": 0.80, "reason": "aromes volatils ; gouter" },
+    { "match": ["epices", "cannelle", "cumin", "muscade", "spice"], "type": "sublinear", "coeff": 0.70, "reason": "intensite non lineaire" },
+    { "match": ["vinaigre", "citron", "jus de citron", "vinegar", "lemon"], "type": "sublinear", "coeff": 0.85, "reason": "acidite percue" },
+    { "match": ["oeuf", "oeufs", "egg", "eggs"], "type": "discrete", "grams_per_unit": 50, "tbsp_per_unit": 3, "round": "down", "reason": "unite non secable ; pour 3 doubles, essayer 5 plutot que 6 ; demi-oeuf ~= 25 g battu" },
+    { "match": ["temps", "cuisson", "minutes", "time", "cooking time"], "type": "geometric", "exponent": 0.6667, "reason": "un plat double ne demande pas le double de temps ; +10-25% typiquement", "nonlinearFlag": true },
+    { "match": ["temperature", "four", "feu", "oven", "heat"], "type": "fixed", "reason": "jamais multipliee" },
+    { "match": ["taille ustensile", "diametre", "moule"], "type": "fixed", "reason": "geometrie : raisonner profondeur/surface, pas multiplier" }
+  ],
+  "rules": [
+    "Geometrie > volume : raisonner profondeur/surface du contenant (une sauce reduit plus lentement en cocotte qu'en poele large).",
+    "Reserver ~10% des assaisonnements (reserve_pct) et ajuster en fin de cuisson.",
+    "Poser un flag de non-linearite (nonlinearFlag) : 'ne se double pas proprement au-dela de ~1.5-2x'.",
+    "Emettre la sortie Cooklang avec '=' (fixed) et notes '--' du moteur (ex: -- a 4x, cocotte large, reduction plus longue)."
+  ],
+  "geometricTimeExamples": {
+    "x1.5": 1.31,
+    "x2": 1.59,
+    "x3": 2.08,
+    "x4": 2.52,
+    "note": "facteur applique au temps = k^(2/3) ; ex: 20 min a x2 -> ~32 min (pas 40)"
+  }
+}
