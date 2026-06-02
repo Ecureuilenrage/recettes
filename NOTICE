@@ -1,0 +1,46 @@
+recettes — scaler de recettes « Epicure »
+==========================================
+
+Ce projet (perso & portfolio) réutilise des ressources tierces. Cet avis satisfait
+l'exigence d'attribution de la licence Creative Commons Attribution 4.0 (CC BY 4.0)
+des embeddings Epicure (cf. PRD §5 « Licence », architecture.md R10, story E4).
+
+
+1. Embeddings Epicure (CC BY 4.0)
+---------------------------------
+
+  Epicure — cartes d'embeddings d'ingrédients (modèles `cooc`, `core`, `chem`).
+  © 2026 Jakub Radzikowski & Josef Chen (KAIKAKU.AI).
+  Licence : Creative Commons Attribution 4.0 International (CC BY 4.0).
+            https://creativecommons.org/licenses/by/4.0/
+
+  Source du modèle    : https://huggingface.co/Kaikaku/epicure-cooc
+  Article de référence : Radzikowski, J. & Chen, J. (2026).
+                         « Epicure: Navigating the Emergent Geometry of Food
+                         Ingredient Embeddings. » arXiv:2605.22391.
+                         https://arxiv.org/abs/2605.22391
+
+  Modifications / usage :
+    - Ce projet utilise UNIQUEMENT les VECTEURS d'embeddings publics (matrice
+      (1790, 300) float32) téléchargés via `huggingface_hub` dans `data/epicure/`
+      (répertoire gitignoré). Aucune modification n'est apportée aux poids.
+    - Le CORPUS d'entraînement (~4,14 M de recettes) n'est PAS publié par les
+      auteurs et n'est donc NI utilisé NI redistribué par ce projet.
+    - Les vecteurs publics ne sont pas redistribués dans ce dépôt : ils sont
+      téléchargés à la demande depuis Hugging Face. Le présent avis fournit le
+      crédit, le lien vers la licence et l'indication d'usage requis par CC BY 4.0.
+
+
+2. Format Cooklang
+------------------
+
+  Les recettes générées sont émises au format Cooklang (`.cook`).
+  Cooklang — https://cooklang.org — projet open source ; format crédité ici.
+
+
+3. Code du projet
+-----------------
+
+  Le code applicatif (`app/`), les tests (`tests/`) et la documentation (`docs/`)
+  sont l'œuvre de l'auteur de ce dépôt. Aucune licence de redistribution n'est
+  accordée par défaut sur le code (projet perso / portfolio).

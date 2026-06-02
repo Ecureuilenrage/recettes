@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Recettes — scaler Épicure{% endblock %}</title>
+  <style>
+    :root {
+      --bg: #faf8f5;
+      --fg: #2b2620;
+      --muted: #6b6256;
+      --accent: #b4541f;
+      --border: #e3ddd2;
+      --panel: #ffffff;
+      --code-bg: #2b2620;
+      --code-fg: #f3efe7;
+      --ok: #2e7d32;
+      --warn: #c62828;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      line-height: 1.5;
+    }
+    .wrap { max-width: 960px; margin: 0 auto; padding: 1.5rem 1.25rem 4rem; }
+    header.hero {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    header.hero h1 { margin: 0 0 .25rem; font-size: 1.6rem; }
+    header.hero p { margin: 0; color: var(--muted); font-size: .95rem; }
+    a { color: var(--accent); }
+    h2 { font-size: 1.2rem; margin-top: 2rem; border-bottom: 1px solid var(--border); padding-bottom: .3rem; }
+    label { display: block; font-weight: 600; margin: .9rem 0 .25rem; font-size: .9rem; }
+    .hint { font-weight: 400; color: var(--muted); font-size: .82rem; }
+    input[type="text"], input[type="number"], select, textarea {
+      width: 100%;
+      padding: .5rem .6rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--panel);
+      color: var(--fg);
+      font: inherit;
+    }
+    textarea { resize: vertical; min-height: 2.4rem; }
+    .row { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .row > div { flex: 1 1 180px; }
+    button {
+      margin-top: 1.4rem;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: .65rem 1.4rem;
+      font: inherit;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    button:hover { filter: brightness(1.07); }
+    pre {
+      background: var(--code-bg);
+      color: var(--code-fg);
+      padding: 1rem;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      font-size: .85rem;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem 1.2rem;
+      margin-bottom: 1rem;
+    }
+    .debug-section { margin-bottom: 1.2rem; }
+    .debug-section h3 { margin: 0 0 .5rem; font-size: 1rem; color: var(--accent); }
+    table { width: 100%; border-collapse: collapse; font-size: .85rem; }
+    th, td { text-align: left; padding: .35rem .5rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+    th { color: var(--muted); font-weight: 600; }
+    .tag { display: inline-block; padding: .05rem .45rem; border-radius: 999px; font-size: .78rem; background: var(--border); color: var(--fg); }
+    .tag.ok { background: #e3f1e3; color: var(--ok); }
+    .tag.warn { background: #f7e0e0; color: var(--warn); }
+    .alert {
+      background: #f7e0e0;
+      border: 1px solid #e0b4b4;
+      color: var(--warn);
+      padding: .8rem 1rem;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+      font-weight: 600;
+    }
+    .muted { color: var(--muted); }
+    .empty { color: var(--muted); font-style: italic; }
+    footer { margin-top: 3rem; color: var(--muted); font-size: .8rem; border-top: 1px solid var(--border); padding-top: 1rem; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <h1>Recettes — scaler Épicure</h1>
+      <p>Génération sous contraintes : associations Épicure, scaling non linéaire par ingrédient, garde-fou de sécurité. Le panneau debug est la vitrine de l'explicabilité.</p>
+    </header>
+    {% block content %}{% endblock %}
+    <footer>
+      Projet portfolio — pipeline local (FastAPI + Jinja2). Données d'associations : Épicure (CC BY 4.0).
+    </footer>
+  </div>
+</body>
+</html>

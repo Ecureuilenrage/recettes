@@ -21,9 +21,9 @@ meta:
   created: 2026-06-01
   source: docs/sprint-plan.md
   story_dir: docs/stories
-  last_updated: 2026-06-02   # SPRINT 4 TERMINÉ : D1, D2, D3, D4 -> done (revues bmad-code-review approuvées, 0 bloquant/majeur -> docs/reviews/D1..D4-code-review.md). Couche 4 « Générateur LLM » complète (models contrat figé, build_prompt barrière 1, generate_recipe couture injectable + retry, validate_recipe barrière 2 déterministe, to_cooklang/validate_cooklang émission .cook + RZ5 résolue, to_markdown rendu lisible). 18 exports publics dans app/generator/__init__.py. Déblocages : E1 (deps D4+A4 done) -> todo ; E3 (deps C5+S0.6 done) -> todo ; E2 reste bloquée (dep E1 todo). RZ5 resolved. pytest 160 passed / 1 skipped, 0 régression (baseline 93).
+  last_updated: 2026-06-02   # SPRINT 5 EN COURS — ÉTAPE 1 TERMINÉE : E1, E3, E4 -> done (revues bmad-code-review approuvées, 0 bloquant/majeur -> docs/reviews/E1,E3,E4-code-review.md). E1 = ASSEMBLEUR (app/main.py SEUL module important les 4 couches, archi §3.1) : run_pipeline(request, complete=, index=) câble translate -> neighbors -> filter_neighbors -> techniques_for/forbidden_cookware/safety -> build_prompt -> generate_recipe(validate=validate_recipe, retry 1) -> scaling APRÈS rédaction (recette canonique scalée : servings cible + œufs scalés RZ1) -> to_cooklang/to_markdown -> DebugInfo (4 sections) ; schémas Pydantic §9.1 ; erreurs -> 422/502/500 ; /health conservé ; testable offline (faux complete+index, R7). E1 a passé 2 majeurs en revue (incohérence portions/œufs .cook vs Markdown) -> corrigés (recette canonique unique partagée) + re-revue APPROUVÉE. E3 = jeu de validation scaling (13 recettes corpus, 148 ingrédients, ×2/÷2/×4, asserts chiffrés déterministes) + notebook calibration complété (alimente F2/RZ2 sans la résoudre). E4 = README portfolio + NOTICE racine (attribution Epicure CC BY 4.0 © 2026 J. Radzikowski & J. Chen, KAIKAKU.AI, R10/§13). Fix orchestrateur centralisé : app/scaling/__init__.py expose désormais l'API publique couche 3 (scale/scale_eggs/scale_time/ScaledQuantity...). Déblocage : E1 done -> E2 (dep E1) blocked -> todo. pytest 194 passed / 3 skipped, 0 régression (baseline 160 ; 3 skipped = 1 intégration Claude + 2 TestClient gardés importorskip(fastapi) non installé).
   critical_path: [C, D, E]
-  next_story: E1   # Sprint 4 livré. Prochain = sprint 5 (app web) : E1 (FastAPI /generate, assemble le pipeline) débloquée ; E3 (jeu de validation scaling) débloquée en parallèle ; E4 (README portfolio) sans deps. E2 (UI) après E1.
+  next_story: F2   # SPRINT 5 TERMINÉ (E1, E2, E3, E4 done) -> v1 LIVRABLE EN LOCAL (uvicorn app.main:app : formulaire -> recette .cook + Markdown + panneau debug explicable ; pytest vert offline). Épic critique [C, D, E] bouclé. Reste l'épic F (post-v1, P2) : F1 (2e cuisine sans toucher au code, deps B3+B4 done) todo ; F2 (affiner coefficients scaling, dep C5 done -> débloquée, alimentée par E3/RZ2) todo ; F3 (doc différé pâtisserie, sans deps) todo. RZ2 reste open (calibration F2). RZ6 (resync backlog documentaire) reste open.
 
 # -----------------------------------------------------------------------------
 # Réserves issues du readiness-check (rattachées aux stories concernées)
@@ -332,29 +332,32 @@ epics:
     stories:
       - id: E1
         title: "FastAPI + endpoint /generate"
-        status: todo   # DÉBLOQUÉE mécaniquement le 2026-06-02 (fin sprint 4) : deps [D4 (done), A4 (done)] toutes done -> couche 4 complète + traduction FR->Epicure dispo. Prochaine story (sprint 5). Câblera le pipeline translate -> neighbors -> filter_neighbors (couche 1) -> techniques_for/forbidden_cookware/safety_for (couche 2) -> build_prompt/generate_recipe/validate_recipe (couche 4) -> scale* (couche 3) -> to_cooklang/to_markdown. NE PAS confondre : c'est E1 qui assemble (app/main.py) ; les couches ne s'importent pas entre elles.
+        status: done   # E1 revue (bmad-code-review 2026-06-02, 2 passes) : APPROUVÉE, 0 bloquant/majeur -> docs/reviews/E1-code-review.md. ASSEMBLEUR : app/main.py = SEUL module important les 4 couches (archi §3.1, vérifié AST), ZÉRO logique métier. run_pipeline(request, *, complete=None, index=None) -> GenerationResponse câble le pipeline complet (archi §7) : translate(hero) -> vérif cuisine ∈ load_cuisines() -> index.neighbors -> filter_neighbors -> techniques_for/forbidden_cookware/load_safety -> build_prompt -> generate_recipe(validate=validate_recipe en callback, max_retries=1) -> scaling APRÈS rédaction (recette CANONIQUE scalée unique : servings cible + scale/scale_eggs(RZ1)/scale_time, partagée par les 2 émetteurs) -> to_cooklang(scaling_notes)/to_markdown -> DebugInfo (epicure/scaling/techniques/validation). Schémas Pydantic §9.1 (Constraints/GenerationRequest/GenerationResponse/DebugInfo) sous import gardé + fallback dataclasses. Erreurs -> HTTP : héros hors vocab/cuisine inconnue -> 422 ; RecipeGenerationError/RecipeValidationError -> 502/500 ; succès 200 ; /health conservé. Testable offline (faux complete+index, R7 ; tests TestClient gardés importorskip(fastapi)). 2 majeurs de la 1re passe (portions base vs cible + œufs divergents .cook/Markdown) CORRIGÉS (recette canonique unique) + re-revue APPROUVÉE. pytest 194 passed / 3 skipped, 0 régression.
         priority: P1
         deps: [D4, A4]
         sprint: 5
-        files: [app/main.py]
+        files: [app/main.py, tests/test_main.py]
       - id: E2
         title: "UI minimale (formulaire + rendu + panneau debug)"
-        status: blocked   # RESTE bloquée : dep [E1] (todo, pas done). Se débloquera quand E1 sera done.
+        status: done   # E2 revue (bmad-code-review 2026-06-02) : APPROUVÉE, 0 bloquant/majeur -> docs/reviews/E2-code-review.md. ÉTEND app/main.py (APRÈS E1) : routes UI GET / (formulaire héros/cuisine/contraintes/portions) + POST /generate-ui (RÉUTILISE run_pipeline) + helper PUR build_view_context (testable sans jinja2/HTTP) ; templates/ Jinja2 (base/index/result) rendent .cook + Markdown + panneau debug 4 sections (epicure/scaling/techniques/validation = vitrine d'explicabilité §9.2). ZÉRO logique métier ajoutée ; E1 (run_pipeline, schémas, POST /generate JSON, GET /health) NON régressée (vérifié AST : main.py reste le SEUL à importer les 4 couches). Imports fastapi/jinja2 gardés ; tests HTTP gardés importorskip ; build_view_context testable offline. Bug Starlette 1.2 (signature TemplateResponse) trouvé+corrigé via deps installées temporairement (203 passed/1 skipped réels). pytest env courant : 197 passed / 7 skipped (fastapi/jinja2 non installés -> 4 tests UI HTTP skippés proprement), 0 régression.
         priority: P1
         deps: [E1]
         sprint: 5
+        files: [app/main.py, templates/, tests/test_ui.py]
       - id: E3
         title: "Jeu de validation scaling (corpus)"
-        status: todo   # DÉBLOQUÉE mécaniquement le 2026-06-02 : deps [C5 (done, sprint 1), S0.6 (done, sprint 2)] toutes done. Indépendante de la couche D ; développable dès le sprint 5 (ou en avance).
+        status: done   # E3 revue (bmad-code-review 2026-06-02) : APPROUVÉE, 0 bloquant/majeur -> docs/reviews/E3-code-review.md. tests/test_scaling_validation.py (23 tests) compare le moteur déterministe (scale/scale_eggs/scale_time) au ×N naïf sur le corpus S0.6 (13 recettes recipes/*.cook, 148 ingrédients : linear 87/sublinear 53/geometric 6/discrete 1/fixed 1), facteurs ×2/÷2/×4, asserts CHIFFRÉS et déterministes (sens de divergence borné par type, œufs RZ1 scale_eggs(3,2.0)==5, temps k^(2/3)), déterminisme N=25, garde-fou AST offline (aucun LLM/réseau/Epicure). notebook calibration_scaling.ipynb complété (14 cellules, exécutable offline). Moteur/table NON modifiés -> RZ2 ALIMENTÉE mais NON résolue (reste open, calibration F2 post-v1). Indépendante de E1/E2.
         priority: P2
         deps: [C5, S0.6]
         sprint: 5
+        files: [tests/test_scaling_validation.py, notebooks/calibration_scaling.ipynb]
       - id: E4
         title: "README portfolio + attribution Epicure (CC BY 4.0)"
-        status: todo
+        status: done   # E4 revue (bmad-code-review 2026-06-02) : APPROUVÉE, 0 bloquant/majeur -> docs/reviews/E4-code-review.md. DOCUMENTAIRE (aucun code/test). README.md portfolio actualisé (statut v1 livrable en local) : pitch, archi 4 couches + règle main->{1,2,3,4}, comment lancer en local (pip install, embeddings Epicure via huggingface_hub Kaikaku/epicure-cooc, ANTHROPIC_API_KEY, uvicorn app.main:app, exemple POST /generate + GET /health, codes 200/422/502, tests offline), exemple .cook + panneau debug (vitrine explicabilité §9.2, marqué illustratif), périmètre v1, crédits. NOTICE créé à la racine : ATTRIBUTION Epicure CC BY 4.0 © 2026 Jakub Radzikowski & Josef Chen (KAIKAKU.AI) + HF + arXiv 2605.22391 (R10/archi §13/PRD §Licence satisfait). Exactitude technique recoupée champ par champ contre app/main.py réel.
         priority: P2
         deps: []
         sprint: 5
+        files: [README.md, NOTICE]
 
   - id: F
     name: "Extension & polish (hors v1)"
@@ -368,7 +371,7 @@ epics:
         sprint: post-v1
       - id: F2
         title: "Affiner coefficients de scaling via tests réels"
-        status: blocked
+        status: todo   # DÉBLOQUÉE mécaniquement le 2026-06-02 (fin sprint 5) : dep [C5 (done)]. ALIMENTÉE par E3 (jeu de validation scaling : écarts chiffrés moteur vs ×N naïf sur le corpus, notebook calibration) et porte RZ2 (seuil/coefficients à calibrer, reste open). Cible post-v1.
         priority: P2
         deps: [C5]
         sprint: post-v1

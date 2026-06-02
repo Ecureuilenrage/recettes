@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block title %}Recette générée — Recettes Épicure{% endblock %}
+
+{% block content %}
+  <p><a href="/">&larr; Nouvelle recette</a></p>
+
+  {% if not ok %}
+    <div class="alert">{{ error }}</div>
+    <p class="muted">La saisie est conservée ci-dessous ; corrigez et relancez.</p>
+    <ul class="muted">
+      <li>Héros : {{ form.hero }}</li>
+      <li>Cuisine : {{ form.cuisine }} · Portions : {{ form.servings }} · Modèle : {{ form.model }}</li>
+    </ul>
+  {% else %}
+
+    <h2>Recette (Markdown lisible)</h2>
+    <div class="panel">
+      <pre>{{ markdown }}</pre>
+    </div>
+
+    <h2>Fichier Cooklang (.cook)</h2>
+    <div class="panel">
+      <pre>{{ cooklang }}</pre>
+    </div>
+
+    <h2>Panneau debug — explicabilité (4 sections)</h2>
+
+    {# Section 1 : Épicure (voisins retenus / rejetés) #}
+    <div class="panel debug-section">
+      <h3>{{ debug_labels.epicure }}</h3>
+      <strong>Retenus</strong>
+      {% if debug.epicure.kept %}
+        <table>
+          <tr><th>Voisin</th><th>Score</th><th>Contexte cuisine</th></tr>
+          {% for n in debug.epicure.kept %}
+            <tr><td>{{ n.name }}</td><td>{{ n.score }}</td><td>{{ n.cuisine_context }}</td></tr>
+          {% endfor %}
+        </table>
+      {% else %}
+        <p class="empty">(aucun voisin retenu)</p>
+      {% endif %}
+      <strong>Rejetés</strong>
+      {% if debug.epicure.rejected %}
+        <table>
+          <tr><th>Voisin</th><th>Score</th><th>Raison du rejet</th></tr>
+          {% for n in debug.epicure.rejected %}
+            <tr><td>{{ n.name }}</td><td>{{ n.score }}</td><td>{{ n.reason }}</td></tr>
+          {% endfor %}
+        </table>
+      {% else %}
+        <p class="empty">(aucun voisin rejeté)</p>
+      {% endif %}
+    </div>
+
+    {# Section 2 : Scaling (par ingrédient) #}
+    <div class="panel debug-section">
+      <h3>{{ debug_labels.scaling }}</h3>
+      {% if debug.scaling %}
+        <table>
+          <tr><th>Ingrédient</th><th>Type</th><th>Coefficient</th><th>Formule</th><th>Valeur</th><th>Raisonnement</th></tr>
+          {% for row in debug.scaling %}
+            <tr>
+              <td>{{ row.name }}</td>
+              <td><span class="tag">{{ row.type }}</span></td>
+              <td>{{ row.coeff if row.coeff is not none else "—" }}</td>
+              <td>{{ row.formula if row.formula else "—" }}</td>
+              <td>{{ row.value }}</td>
+              <td>{{ row.reasoning if row.reasoning else "—" }}</td>
+            </tr>
+          {% endfor %}
+        </table>
+      {% else %}
+        <p class="empty">(aucun ingrédient scalé)</p>
+      {% endif %}
+    </div>
+
+    {# Section 3 : Techniques (retenues / exclues) #}
+    <div class="panel debug-section">
+      <h3>{{ debug_labels.techniques }}</h3>
+      <strong>Retenues</strong>
+      {% if debug.techniques.kept %}
+        <p>{% for t in debug.techniques.kept %}<span class="tag ok">{{ t }}</span> {% endfor %}</p>
+      {% else %}
+        <p class="empty">(aucune technique retenue)</p>
+      {% endif %}
+      <strong>Exclues</strong>
+      {% if debug.techniques.excluded %}
+        <table>
+          <tr><th>Technique</th><th>Outil interdit</th><th>Via contrainte</th></tr>
+          {% for ex in debug.techniques.excluded %}
+            <tr><td>{{ ex.technique_id }}</td><td>{{ ex.forbidden_tool }}</td><td>{{ ex.via_constraint }}</td></tr>
+          {% endfor %}
+        </table>
+      {% else %}
+        <p class="empty">(aucune technique exclue)</p>
+      {% endif %}
+    </div>
+
+    {# Section 4 : Validation (garde-fou déterministe) #}
+    <div class="panel debug-section">
+      <h3>{{ debug_labels.validation }}</h3>
+      {% if debug.validation.ok %}
+        <p><span class="tag ok">VALIDÉ</span> — aucune violation détectée.</p>
+      {% else %}
+        <p><span class="tag warn">VIOLATIONS</span></p>
+      {% endif %}
+      {% if debug.validation.violations %}
+        <table>
+          <tr><th>Type</th><th>Détail</th><th>Sévérité</th></tr>
+          {% for v in debug.validation.violations %}
+            <tr><td>{{ v.kind }}</td><td>{{ v.detail }}</td><td>{{ v.severity }}</td></tr>
+          {% endfor %}
+        </table>
+      {% endif %}
+      {% if debug.validation.feedback %}
+        <p class="muted"><em>Feedback : {{ debug.validation.feedback }}</em></p>
+      {% endif %}
+    </div>
+
+  {% endif %}
+{% endblock %}
