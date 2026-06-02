@@ -21,9 +21,9 @@ meta:
   created: 2026-06-01
   source: docs/sprint-plan.md
   story_dir: docs/stories
-  last_updated: 2026-06-01   # Sprint 2 livré : B3, B4, S0.4, S0.5, S0.6 -> done (revues bmad-code-review approuvées, 0 bloquant/majeur) ; RZ4 résolue ; A3 + F1 débloquées
+  last_updated: 2026-06-02   # Sprint 3 livré : A3, A4 -> done (revues bmad-code-review approuvées, 0 bloquant/majeur) ; RZ3 résolue (A4) ; couche 1 complète ; D1 débloquée mécaniquement (toutes ses deps done)
   critical_path: [C, D, E]
-  next_story: A3   # Sprint 2 terminé ; prochain = sprint 3 (A3 filtrage cuisine/contraintes [débloquée], A4 traduction FR→Epicure)
+  next_story: D1   # Sprint 3 terminé ; prochain = sprint 4 (générateur LLM). D1 débloquée (deps A3+B3+B4+C5 toutes done). E1 RESTE bloquée (manque toute la couche D : deps D4+A4 ; A4 seul ne suffit pas)
 
 # -----------------------------------------------------------------------------
 # Réserves issues du readiness-check (rattachées aux stories concernées)
@@ -43,7 +43,7 @@ reserves:
     description: "Story manquante : traduction FR → clé Epicure (snake_case EN). Préreq E1/E2."
     story: A4
     sprint: 3
-    status: open
+    status: resolved   # A4 (2026-06-02) : module app/epicure/translate.py + table app/epicure/fr_aliases.json (39 clés cibles, toutes présentes au vocab Epicure) ; noyau corpus italien S0.6 couvert (huile d'olive->olive_oil, ail->garlic, basilic->basil...) ; normalisation casse/accents/apostrophe ; fallback honnête (KeyError message clair, cohérent neighbors->422, archi §9.1) ; guanciale->pancetta documenté (guanciale absent du vocab). Revue bmad-code-review approuvée (0 bloquant/majeur). Voir docs/reviews/A4-code-review.md.
   RZ4:
     description: "Valeurs sécurité œufs + sources ANSES non figées (5/7 lignes USDA OK)."
     story: S0.5
@@ -158,17 +158,21 @@ epics:
         sprint: null
       - id: A3
         title: "Filtrage des voisins par cuisine/contraintes"
-        status: todo   # débloquée mécaniquement : deps A1 (done) + B3 (done, sprint 2). Cible sprint 3.
+        status: done   # A3 revue (bmad-code-review 2026-06-02) : approuvée, 0 bloquant/majeur -> docs/reviews/A3-code-review.md ; nouveau module app/epicure/filter.py (filter_neighbors -> FilteredNeighbors{kept, rejected[(name,score,reason)]} pour FR7) + table app/epicure/diet_exclusions.json (régime->clés exclues, modulaire) ; filtrage cuisine SOUPLE (D14 : annote via macro-région, ne supprime pas ; dégradation gracieuse si données cuisine absentes) ; rejet DUR réservé aux régimes (végétarien/végan, insensible casse/accents) ; module pur, aucun import inter-couches (patron de normalisation recopié) ; pytest 93 passed (68 + 16 filter + 9 translate), 0 régression
+        story_file: docs/stories/A3.md
         priority: P1
         deps: [A1, B3]
         sprint: 3
+        files: [app/epicure/filter.py, app/epicure/diet_exclusions.json, tests/test_filter.py]
       - id: A4
         title: "Traduction FR → clé Epicure (snake_case EN)"
-        status: todo   # nouvelle story issue de RZ3
+        status: done   # A4 revue (bmad-code-review 2026-06-02) : approuvée, 0 bloquant/majeur -> docs/reviews/A4-code-review.md ; nouveau module app/epicure/translate.py (translate/translate_many/try_translate) + table app/epicure/fr_aliases.json (39 clés cibles, intégrité table<->vocab vérifiée) ; corpus italien S0.6 couvert, normalisation casse/accents/apostrophe, fallback KeyError honnête (archi §9.1) ; module pur, aucun import inter-couches ; RZ3 RÉSOLUE ; pytest 93 passed, 0 régression
+        story_file: docs/stories/A4.md
         priority: P1
         deps: [A1]
         sprint: 3
         reserves: [RZ3]
+        files: [app/epicure/translate.py, app/epicure/fr_aliases.json, tests/test_translate.py]
 
   - id: B
     name: "Base technique (couche 2)"
@@ -289,7 +293,7 @@ epics:
     stories:
       - id: D1
         title: "Prompt contraint + intégration Claude API"
-        status: blocked
+        status: todo   # débloquée mécaniquement le 2026-06-02 : toutes les deps sont done (A3 done sprint 3 ; B3+B4 done sprint 2 ; C5 done sprint 1). Prochaine story du critical path (sprint 4, couche 4 générateur).
         priority: P1
         deps: [A3, B3, B4, C5]
         sprint: 4
@@ -321,7 +325,7 @@ epics:
     stories:
       - id: E1
         title: "FastAPI + endpoint /generate"
-        status: blocked
+        status: blocked   # RESTE bloquée malgré A4 done (2026-06-02) : deps [D4, A4] ; A4 ne suffit pas seul, il manque toute la couche D (D1->D2->D3->D4 non livrés). Se débloquera quand D4 sera done.
         priority: P1
         deps: [D4, A4]
         sprint: 5
