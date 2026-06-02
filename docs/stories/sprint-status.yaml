@@ -21,9 +21,9 @@ meta:
   created: 2026-06-01
   source: docs/sprint-plan.md
   story_dir: docs/stories
-  last_updated: 2026-06-02   # Sprint 3 livré : A3, A4 -> done (revues bmad-code-review approuvées, 0 bloquant/majeur) ; RZ3 résolue (A4) ; couche 1 complète ; D1 débloquée mécaniquement (toutes ses deps done)
+  last_updated: 2026-06-02   # SPRINT 4 TERMINÉ : D1, D2, D3, D4 -> done (revues bmad-code-review approuvées, 0 bloquant/majeur -> docs/reviews/D1..D4-code-review.md). Couche 4 « Générateur LLM » complète (models contrat figé, build_prompt barrière 1, generate_recipe couture injectable + retry, validate_recipe barrière 2 déterministe, to_cooklang/validate_cooklang émission .cook + RZ5 résolue, to_markdown rendu lisible). 18 exports publics dans app/generator/__init__.py. Déblocages : E1 (deps D4+A4 done) -> todo ; E3 (deps C5+S0.6 done) -> todo ; E2 reste bloquée (dep E1 todo). RZ5 resolved. pytest 160 passed / 1 skipped, 0 régression (baseline 93).
   critical_path: [C, D, E]
-  next_story: D1   # Sprint 3 terminé ; prochain = sprint 4 (générateur LLM). D1 débloquée (deps A3+B3+B4+C5 toutes done). E1 RESTE bloquée (manque toute la couche D : deps D4+A4 ; A4 seul ne suffit pas)
+  next_story: E1   # Sprint 4 livré. Prochain = sprint 5 (app web) : E1 (FastAPI /generate, assemble le pipeline) débloquée ; E3 (jeu de validation scaling) débloquée en parallèle ; E4 (README portfolio) sans deps. E2 (UI) après E1.
 
 # -----------------------------------------------------------------------------
 # Réserves issues du readiness-check (rattachées aux stories concernées)
@@ -53,7 +53,7 @@ reserves:
     description: "Identité/maintenance du paquet PyPI cooklang-py à confirmer, sinon fallback regex."
     story: D3
     sprint: 4
-    status: open
+    status: resolved   # D3 (2026-06-02) : fallback regex ACTÉ. Émission .cook par templating maison (app/generator/cooklang.py: to_cooklang) + validation regex (validate_cooklang, patron recopié de recipes/_check_cook.py), AUCUNE dépendance cooklang-py (décision D5/archi §8.4/§12). Revue bmad-code-review approuvée (0 bloquant/majeur, cooklang absent de sys.modules, requirements.txt figé). Voir docs/reviews/D3-code-review.md.
   RZ6:
     description: "Resync backlog FR5a/b/c & FR6a/b + trancher FR8 (sélecteur UI vs note R&D). Documentaire."
     story: [C1, C2, C3, C4, D3, D4, A2]
@@ -293,31 +293,38 @@ epics:
     stories:
       - id: D1
         title: "Prompt contraint + intégration Claude API"
-        status: todo   # débloquée mécaniquement le 2026-06-02 : toutes les deps sont done (A3 done sprint 3 ; B3+B4 done sprint 2 ; C5 done sprint 1). Prochaine story du critical path (sprint 4, couche 4 générateur).
+        status: done   # D1 revue (bmad-code-review 2026-06-02) : approuvée, 0 bloquant/majeur -> docs/reviews/D1-code-review.md. Contrat partagé app/generator/models.py FIGÉ (8 dataclasses frozen : Quantity, Temperature, Duration, Step, StructuredRecipe, ConstrainedPrompt, Violation, ValidationResult + parse_structured_recipe) ; build_prompt PUR (llmConstraints verbatim + étiquetage [SÉCURITÉ]/[TECHNIQUE]/[PRÉFÉRENCE], barrière 1) ; generate_recipe (couture complete injectable + retry 1 max + échec propre RecipeValidationError). anthropic gardé UNIQUEMENT dans client.py ; aucun import inter-couches runtime (TYPE_CHECKING). Exports fusionnés dans __init__.py par l'orchestrateur. pytest 111 passed / 1 skipped, 0 régression.
+        story_file: docs/stories/D1.md
         priority: P1
         deps: [A3, B3, B4, C5]
         sprint: 4
-        files: [app/generator/]
+        files: [app/generator/models.py, app/generator/prompt.py, app/generator/client.py, tests/test_prompt.py, tests/test_client.py]
       - id: D2
         title: "Garde-fou « jamais hors base » + tests anti-hallucination"
-        status: blocked
+        status: done   # D2 revue (bmad-code-review 2026-06-02) : approuvée, 0 bloquant/majeur -> docs/reviews/D2-code-review.md. Module NEUF app/generator/validate.py : validate_recipe(recipe, techniques, safety, forbidden=frozenset()) -> ValidationResult (barrière 2 déterministe, archi §6.2) — appartenance température (scalaires + intervalles « 150-160 » parsés, par unité °C/°F), sécurité protéines (minima USDA critical:true EXCLUSIVEMENT depuis safety, jamais sous minimum, protéine non citée signalée), #cookware interdit (sous-séquence de tokens). PUR : pas de retry (boucle dans client/D1), pas de réparation silencieuse. 19 tests anti-hallucination (barrière 3) probants. Aucun import inter-couches runtime (TYPE_CHECKING). RZ4 non rouverte. pytest 149 passed / 1 skipped.
+        story_file: docs/stories/D2.md
         priority: P1
         deps: [D1, S0.5]
         sprint: 4
         reserves: [RZ4]
+        files: [app/generator/validate.py, tests/test_validate.py]
       - id: D3
         title: "Émission .cook + validation"
-        status: blocked
+        status: done   # D3 revue (bmad-code-review 2026-06-02) : approuvée, 0 bloquant/majeur -> docs/reviews/D3-code-review.md. Module NEUF app/generator/cooklang.py : to_cooklang(recipe, scaling_notes) -> str (templating maison, marqueurs @/#/~, verrou = pour fixed, notes -- issues du scaling couche 3 + étiquettes LLM ; scaling appliqué avant émission, archi §7/§8.4) + validate_cooklang(text) -> (bool, list[str]) (validation regex, patron recopié de recipes/_check_cook.py). RZ5 RÉSOLUE (fallback regex, AUCUNE dépendance cooklang-py). 19 tests probants. Aucun import inter-couches runtime (TYPE_CHECKING). pytest 149 passed / 1 skipped.
+        story_file: docs/stories/D3.md
         priority: P1
         deps: [D1, C5, S0.4]
         sprint: 4
         reserves: [RZ5]
+        files: [app/generator/cooklang.py, tests/test_cooklang.py]
       - id: D4
         title: "Rendu Markdown lisible"
-        status: blocked
+        status: done   # D4 revue (bmad-code-review 2026-06-02) : approuvée, 0 bloquant/majeur -> docs/reviews/D4-code-review.md. Module NEUF app/generator/markdown.py : to_markdown(recipe) -> str (1 paramètre, §4.4) — titre/portions/## Ingrédients/## Préparation (étapes numérotées), étiquettes [SÉCURITÉ]/[TECHNIQUE]/[PRÉFÉRENCE] + températures de sécurité VISIBLES (vitrine explicabilité §9.2), sections Techniques/Notes conditionnelles, formatage déterministe (2.0->2). PUR ; aucun import inter-couches runtime ; helper de formatage recopié (pas importé). 11 tests probants. Exports fusionnés dans __init__.py. SPRINT 4 TERMINÉ (couche 4 complète). pytest 160 passed / 1 skipped.
+        story_file: docs/stories/D4.md
         priority: P1
         deps: [D3]
         sprint: 4
+        files: [app/generator/markdown.py, tests/test_markdown.py]
 
   - id: E
     name: "App web + R&D"
@@ -325,20 +332,20 @@ epics:
     stories:
       - id: E1
         title: "FastAPI + endpoint /generate"
-        status: blocked   # RESTE bloquée malgré A4 done (2026-06-02) : deps [D4, A4] ; A4 ne suffit pas seul, il manque toute la couche D (D1->D2->D3->D4 non livrés). Se débloquera quand D4 sera done.
+        status: todo   # DÉBLOQUÉE mécaniquement le 2026-06-02 (fin sprint 4) : deps [D4 (done), A4 (done)] toutes done -> couche 4 complète + traduction FR->Epicure dispo. Prochaine story (sprint 5). Câblera le pipeline translate -> neighbors -> filter_neighbors (couche 1) -> techniques_for/forbidden_cookware/safety_for (couche 2) -> build_prompt/generate_recipe/validate_recipe (couche 4) -> scale* (couche 3) -> to_cooklang/to_markdown. NE PAS confondre : c'est E1 qui assemble (app/main.py) ; les couches ne s'importent pas entre elles.
         priority: P1
         deps: [D4, A4]
         sprint: 5
         files: [app/main.py]
       - id: E2
         title: "UI minimale (formulaire + rendu + panneau debug)"
-        status: blocked
+        status: blocked   # RESTE bloquée : dep [E1] (todo, pas done). Se débloquera quand E1 sera done.
         priority: P1
         deps: [E1]
         sprint: 5
       - id: E3
         title: "Jeu de validation scaling (corpus)"
-        status: blocked
+        status: todo   # DÉBLOQUÉE mécaniquement le 2026-06-02 : deps [C5 (done, sprint 1), S0.6 (done, sprint 2)] toutes done. Indépendante de la couche D ; développable dès le sprint 5 (ou en avance).
         priority: P2
         deps: [C5, S0.6]
         sprint: 5
